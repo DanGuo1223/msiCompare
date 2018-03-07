@@ -147,7 +147,16 @@ compareMSI_test <- function(msset,conditionOfInterest,
     }
     rm(spInit)
 
-
+    ####### check for islands of unconnected pixels within tissues
+    W <- adj.grid(coord, sample = techRep,
+                  type = type.neighbor,
+                  radius = radius.neighbor,
+                  max.dist = maxdist.neighbor)+0
+    W.list<- mat2listw(W)
+    W.nb <- W.list$neighbours
+    W.islands <- n.comp.nb(W.nb)
+    islands <- W.islands$comp.id
+    rm(W, W.list, W.nb, W.islands)
     ####################################################################################################
     ####################################################################################################
     ####################################################################################################
@@ -333,7 +342,7 @@ compareMSI_test <- function(msset,conditionOfInterest,
               tauVar.a = a0_sp,
               tauVar.b = b0_sp,
               sample = techRep[ind_cond],
-              islands = NULL
+              islands = islands[ind_cond]
             )
 
 
