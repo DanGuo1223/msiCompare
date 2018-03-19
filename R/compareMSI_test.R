@@ -51,6 +51,7 @@ compareMSI_test <- function(msset,conditionOfInterest,
                        a0_tec=.001, b0_tec=.001,			# Hyperprior for tautec
                        a0_sp=.001, b0_sp=.001,			# Hyperprior for tau.spatial
                        rd = .00001, # ratio of varSpike/varSlab
+                       empiricalBeta = F,
                        dropZeros = F
 ){
 
@@ -234,7 +235,11 @@ compareMSI_test <- function(msset,conditionOfInterest,
           resbeta <- sum((y-x1a-zb_bio-zb_tec-phiVec_m)[conditionVec == 0]) #residuals for pixels in first condition only
 
           vbeta<- 1/(prec0+numCond1/eps_m.var)
-          mbeta<-vbeta*(prec0*beta0 + resbeta/eps_m.var)
+          if ( empiricalBeta ) {
+            mbeta <- mean(y[conditionVec == 0])
+          } else {
+            mbeta <- vbeta*(prec0*beta0 + resbeta/eps_m.var)
+          }
           beta <- rnorm(n=1, mean = mbeta, sd = sqrt(vbeta))
           xb <-  X*beta
           Betas[i,]<- beta
