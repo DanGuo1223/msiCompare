@@ -36,7 +36,7 @@
 #' @export
 #'
 
-compareMSI_test <- function(msset,conditionOfInterest,
+compareMSI_multi <- function(msset,conditionOfInterest,
                        feature, nsim=5000, burnin = 2500, trace = T,
                        piPrior = .1, seed = 1, logbase2 = F, coord = NULL,
                        type.neighbor = "radius", radius.neighbor = 1, maxdist.neighbor = NULL,
@@ -51,7 +51,7 @@ compareMSI_test <- function(msset,conditionOfInterest,
                        a0_tec=.001, b0_tec=.001,			# Hyperprior for tautec
                        a0_sp=.001, b0_sp=.001,			# Hyperprior for tau.spatial
                        rd = .00001, # ratio of varSpike/varSlab
-                       empiricalBeta = F,
+                       empiricalBayes = F,
                        dropZeros = F
 ){
 
@@ -67,7 +67,7 @@ compareMSI_test <- function(msset,conditionOfInterest,
 
     if(n_tec == 1L){
       print("Fitting model version: single-tissue experiment, no hierarchical centering")
-      return(compareMSI_test_single(msset,conditionOfInterest,
+      return(compareMSI_single(msset,conditionOfInterest,
                                feature, nsim, burnin, trace,
                                piPrior, seed, logbase2, coord,
                                type.neighbor, radius.neighbor, maxdist.neighbor,
@@ -81,7 +81,8 @@ compareMSI_test <- function(msset,conditionOfInterest,
                                a0_bio, b0_bio,			# Hyperprior for taubio
                                a0_tec, b0_tec,			# Hyperprior for tautec
                                a0_sp, b0_sp,			# Hyperprior for tau.spatial
-                               rd # ratio of varSpike/varSlab
+                               rd, # ratio of varSpike/varSlab
+                               empiricalBayes
       ))
     }else{
       print("Fitting model version: multi-tissue experiment, no hierarchical centering")
@@ -235,12 +236,13 @@ compareMSI_test <- function(msset,conditionOfInterest,
           resbeta <- sum((y-x1a-zb_bio-zb_tec-phiVec_m)[conditionVec == 0]) #residuals for pixels in first condition only
 
           vbeta<- 1/(prec0+numCond1/eps_m.var)
-          if ( empiricalBeta ) {
+          if ( empiricalBayes ) {
             mbeta <- mean(y[conditionVec == 0])
+            beta <- mbeta
           } else {
             mbeta <- vbeta*(prec0*beta0 + resbeta/eps_m.var)
+            beta <- rnorm(n=1, mean = mbeta, sd = sqrt(vbeta))
           }
-          beta <- rnorm(n=1, mean = mbeta, sd = sqrt(vbeta))
           xb <-  X*beta
           Betas[i,]<- beta
 

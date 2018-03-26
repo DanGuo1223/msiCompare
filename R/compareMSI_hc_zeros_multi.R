@@ -36,7 +36,7 @@
 #' @export
 #'
 
-compareMSI_zeros <- function(msset,conditionOfInterest,
+compareMSI_hc_zeros_multi <- function(msset,conditionOfInterest,
                           feature, nsim=5000, burnin = 2500, trace = T,
                           piPrior = .1, seed = 1, logbase2 = F, coord = NULL,
                           type.neighbor = "radius", radius.neighbor = 1, maxdist.neighbor = NULL,
@@ -51,6 +51,7 @@ compareMSI_zeros <- function(msset,conditionOfInterest,
                           a0_tec=.001, b0_tec=.001,			# Hyperprior for tautec
                           a0_sp=.001, b0_sp=.001,			# Hyperprior for tau.spatial
                           rd = .00001, # ratio of varSpike/varSlab
+                          empiricalBayes = F,
                           dropZeros = T #should we treat zeros as missing values?
 ){
 
@@ -60,7 +61,8 @@ compareMSI_zeros <- function(msset,conditionOfInterest,
 
 
   if(n_tec == 1){
-    return(compareMSI_zerosSingle(msset,conditionOfInterest,
+    warning("hierarchical centering not possible for n_tech = 1")
+    return(compareMSI_zeros_single(msset,conditionOfInterest,
                       feature, nsim, burnin, trace,
                       piPrior, seed, logbase2, coord,
                       type.neighbor, radius.neighbor, maxdist.neighbor,
@@ -75,6 +77,7 @@ compareMSI_zeros <- function(msset,conditionOfInterest,
                       a0_tec, b0_tec,			# Hyperprior for tautec
                       a0_sp, b0_sp,			# Hyperprior for tau.spatial
                       rd, # ratio of varSpike/varSlab
+                      empiricalBayes,
                       dropZero = T
     ))
   }
@@ -285,8 +288,13 @@ for(f in feature){
         resbeta <- sum(b_tec[sampCond$condition == 0]) #residuals for pixels in first condition only
 
         vbeta<- 1/(prec0+numTissueCond1*tau_tec)
-        mbeta<-vbeta*(prec0*beta0 + resbeta*tau_tec)
-        beta <- rnorm(n=1, mean = mbeta, sd = sqrt(vbeta))
+        if ( empiricalBayes ) {
+            mbeta <- mean(y[conditionVec == 0])
+            beta <- mbeta
+          } else {
+            mbeta<-vbeta*(prec0*beta0 + resbeta*tau_tec)
+            beta <- rnorm(n=1, mean = mbeta, sd = sqrt(vbeta))
+          }
         xb <-  X*beta
         Betas[i,]<- beta
         #####################################################################

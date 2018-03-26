@@ -36,7 +36,7 @@
 #' @export
 #'
 
-compareMSI_test_single <- function(msset,conditionOfInterest,
+compareMSI_single <- function(msset,conditionOfInterest,
                         feature, nsim=5000, burnin = 2500, trace = T,
                         piPrior = .1, seed = 1, logbase2 = F, coord = NULL,
                         type.neighbor = "radius", radius.neighbor = 1, maxdist.neighbor = NULL,
@@ -51,7 +51,7 @@ compareMSI_test_single <- function(msset,conditionOfInterest,
                         a0_tec=.001, b0_tec=.001,			# Hyperprior for tautec
                         a0_sp=.001, b0_sp=.001,			# Hyperprior for tau.spatial
                         rd = .00001, # ratio of varSpike/varSlab
-                        empiricalBeta = F,
+                        empiricalBayes = F,
                        dropZeros = T
 ){
 
@@ -193,12 +193,13 @@ for(f in feature){
         resbeta <- sum((y-x1a-phiVec_m)[conditionVec == 0]) #residuals for pixels in first condition only
 
         vbeta<- 1/(prec0+numCond1/eps_m.var)
-        if ( empiricalBeta ) {
+        if ( empiricalBayes ) {
           mbeta <- mean(y[conditionVec == 0])
+          beta <- mbeta
         } else {
           mbeta <- vbeta*(prec0*beta0 + resbeta/eps_m.var)
+          beta <- rnorm(n=1, mean = mbeta, sd = sqrt(vbeta))
         }
-        beta <- rnorm(n=1, mean = mbeta, sd = sqrt(vbeta))
         xb <-  X*beta
         Betas[i,]<- beta
 

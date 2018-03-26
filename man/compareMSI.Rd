@@ -10,7 +10,8 @@ compareMSI(msset, conditionOfInterest, feature, nsim = 5000, burnin = 2500,
   spInit = NULL, bioRep = NULL, techRep, beta0 = 0, prec0 = 0.01,
   precAlpha0 = 0.01, a0_eps = 0.001, b0_eps = 0.001, a0_bio = 0.001,
   b0_bio = 0.001, a0_tec = 0.001, b0_tec = 0.001, a0_sp = 0.001,
-  b0_sp = 0.001, rd = 1e-05, dropZeros = F)
+  b0_sp = 0.001, rd = 1e-05, empiricalBayes = F, dropZeros = F,
+  hCenter = F)
 }
 \arguments{
 \item{msset}{an object of class "MSImageSet"}

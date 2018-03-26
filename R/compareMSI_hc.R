@@ -41,7 +41,8 @@ compareMSI_hc <- function(msset,conditionOfInterest,
                           prec0 = .01, # Prior Precision Matrix of beta (vague)  (only allow intercept)
                           precAlpha0 = .01, #Prior Precision of slab (value of condition effect if it is not zero)
                           d0=.001, g0=.001,			# Hyperpriors for tau, taubio, tautec
-                          rd = .00001 # ratio of varSpike/varSlab
+                          rd = .00001, # ratio of varSpike/varSlab
+                          empiricalBayes = F
 ){
 
   techRep <- factor(techRep) #factor with different levels for each tissue (like "sample" before)
@@ -50,6 +51,7 @@ compareMSI_hc <- function(msset,conditionOfInterest,
 
 
   if(n_tec == 1 | !is.null(bioRep)){
+    warning("hierarchical centering not possible for n_tech = 1")
     return(compareMSI(msset,conditionOfInterest,
                        feature, nsim, burnin, trace,
                        piPrior, seed, logbase2, coord,
@@ -61,7 +63,8 @@ compareMSI_hc <- function(msset,conditionOfInterest,
                        prec0, # Prior Precision Matrix of beta (vague)  (only allow intercept)
                        precAlpha0, #Prior Precision of slab (value of condition effect if it is not zero)
                        d0, g0,			# Hyperpriors for tau, taubio, tautec
-                       rd # ratio of varSpike/varSlab
+                       rd, # ratio of varSpike/varSlab
+                       empiricalBayes
     ))
   }
 
@@ -236,8 +239,13 @@ compareMSI_hc <- function(msset,conditionOfInterest,
         resbeta <- sum(b_tec[sampCond$condition == 0]) #residuals for pixels in first condition only
 
         vbeta<- 1/(prec0+numTissueCond1*tau_tec)
-        mbeta<-vbeta*(prec0*beta0 + resbeta*tau_tec)
-        beta <- rnorm(n=1, mean = mbeta, sd = sqrt(vbeta))
+        if ( empiricalBayes ) {
+          mbeta <- mean(y[conditionVec == 0])
+          beta <- mbeta
+        } else {
+          mbeta<-vbeta*(prec0*beta0 + resbeta*tau_tec)
+          beta <- rnorm(n=1, mean = mbeta, sd = sqrt(vbeta))
+        }
         xb <-  X*beta
         Betas[i,]<- beta
         #####################################################################

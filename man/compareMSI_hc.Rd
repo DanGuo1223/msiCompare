@@ -9,7 +9,7 @@ compareMSI_hc(msset, conditionOfInterest, feature, nsim = 5000,
   coord = NULL, type.neighbor = "radius", radius.neighbor = 1,
   maxdist.neighbor = NULL, spInit = NULL, bioRep = NULL, techRep,
   beta0 = 0, prec0 = 0.01, precAlpha0 = 0.01, d0 = 0.001, g0 = 0.001,
-  rd = 1e-05)
+  rd = 1e-05, empiricalBayes = F)
 }
 \arguments{
 \item{msset}{an object of class "MSImageSet"}
