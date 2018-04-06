@@ -13,8 +13,6 @@ Imports:
   spam,
   spdep,
   mvtnorm,
-  lme4,
-  lmerTest,
   Cardinal
 RoxygenNote: 6.0.1
 Suggests: knitr,
