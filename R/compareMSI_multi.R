@@ -295,6 +295,7 @@ compareMSI_multi <- function(msset,conditionOfInterest,
             vb_tec<-1/(tau_tec+nis_tec*tau)
             mb_tec<-vb_tec*(tau*t(Z_tec)%*%(y-x1a-xb-zb_bio-phiVec_m))
             b_tec<-rnorm(n_tec,mb_tec,sqrt(vb_tec))
+            print(b_tec)
             zb_tec<-Z_tec%*%b_tec
           }else{
             zb_tec <- rep(0, N)
